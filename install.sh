@@ -64,14 +64,17 @@ fi
 "$TARGET_DIR/venv/bin/pip" install -r "$TARGET_DIR/requirements.txt"
 
 cp "$SRC_DIR/input-tracker.service" "$UNIT_DIR/input-tracker.service"
+cp "$SRC_DIR/input-tracker-web.service" "$UNIT_DIR/input-tracker-web.service"
 systemctl --user daemon-reload
 
+UNITS=(input-tracker.service input-tracker-web.service)
+
 echo
-[[ -z "$AUTOSTART" ]] && AUTOSTART="$(ask 'Start input-tracker automatically at login?' y)"
+[[ -z "$AUTOSTART" ]] && AUTOSTART="$(ask 'Start input-tracker (daemon + web UI) automatically at login?' y)"
 
 if [[ "$AUTOSTART" == "yes" ]]; then
-  systemctl --user enable --now input-tracker.service
-  echo "  -> enabled at login, started now"
+  systemctl --user enable --now "${UNITS[@]}"
+  echo "  -> enabled at login, started now (daemon + web UI)"
 
   [[ -z "$LINGER" ]] && LINGER="$(ask 'Also keep tracker running when you are logged out (enable user lingering)?' n)"
   if [[ "$LINGER" == "yes" ]]; then
@@ -82,14 +85,14 @@ if [[ "$AUTOSTART" == "yes" ]]; then
     fi
   fi
 else
-  systemctl --user start input-tracker.service
+  systemctl --user start "${UNITS[@]}"
   echo "  -> started for this session only (will NOT autostart at next login)"
-  echo "     run 'systemctl --user enable input-tracker.service' later to autostart"
+  echo "     run 'systemctl --user enable ${UNITS[*]}' later to autostart"
 fi
 
 echo
 echo "status:"
-systemctl --user --no-pager status input-tracker.service | head -10
+systemctl --user --no-pager status "${UNITS[@]}" | head -20
 echo
 echo "view stats:  $TARGET_DIR/venv/bin/python $TARGET_DIR/tracker.py show"
-echo "web ui:      $TARGET_DIR/venv/bin/python $TARGET_DIR/tracker.py web   → http://127.0.0.1:7070"
+echo "web ui:      http://127.0.0.1:7070  (served by input-tracker-web.service)"
