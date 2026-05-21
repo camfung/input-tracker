@@ -1,0 +1,13 @@
+[Unit]
+Description=Input tracker (mouse distance + key histogram)
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.input-tracker/venv/bin/python %h/.input-tracker/tracker.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=graphical-session.target
