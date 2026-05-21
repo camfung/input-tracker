@@ -27,7 +27,8 @@ Persisted to `~/.input-tracker/stats.json` every 30s and on shutdown.
 - `tracker.py` — daemon + CLI (`show`, `reset`, `export`, `web`, `run`)
 - `webui.py` — Chart.js dashboard (stdlib HTTP server, no Flask)
 - `requirements.txt` — `pynput`, `python-xlib`
-- `input-tracker.service` — systemd **user** unit
+- `input-tracker.service` — systemd **user** unit for the input-listener daemon
+- `input-tracker-web.service` — systemd **user** unit for the dashboard at `127.0.0.1:7070`
 - `install.sh` — one-shot installer
 
 ## Install
@@ -38,12 +39,12 @@ Persisted to `~/.input-tracker/stats.json` every 30s and on shutdown.
 
 Copies files to `~/.input-tracker/`, creates venv, asks two questions:
 
-1. **Start input-tracker automatically at login?** (default Y)
-   - Yes → `systemctl --user enable --now input-tracker.service` (runs now + every login)
-   - No  → starts for this session only; you can `systemctl --user enable input-tracker.service` later
+1. **Start input-tracker (daemon + web UI) automatically at login?** (default Y)
+   - Yes → enables and starts both `input-tracker.service` and `input-tracker-web.service`
+   - No  → starts both for this session only; you can `systemctl --user enable …` later
 2. *(only if autostart=yes)* **Keep running when you're logged out?** (default N)
    - Yes → `loginctl enable-linger $USER`
-   - No  → service stops when the last session closes
+   - No  → services stop when the last session closes
 
 ### Non-interactive
 
@@ -113,10 +114,18 @@ Auto-refreshes every 15 seconds.
 ## Service control
 
 ```bash
-systemctl --user status input-tracker
-systemctl --user restart input-tracker
-systemctl --user disable --now input-tracker
+# both
+systemctl --user status  input-tracker input-tracker-web
+systemctl --user restart input-tracker input-tracker-web
+systemctl --user disable --now input-tracker input-tracker-web
+
+# just one
+systemctl --user restart input-tracker          # the input-listening daemon
+systemctl --user restart input-tracker-web      # the dashboard server
 ```
+
+After install, the dashboard is at **http://127.0.0.1:7070** and the
+input-listening daemon is writing to `~/.input-tracker/stats.json`.
 
 ## JSON schema
 

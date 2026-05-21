@@ -1,0 +1,14 @@
+[Unit]
+Description=Input tracker web dashboard
+After=input-tracker.service
+Wants=input-tracker.service
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.input-tracker/venv/bin/python %h/.input-tracker/tracker.py web --host 127.0.0.1 --port 7070
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=graphical-session.target
