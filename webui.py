@@ -236,7 +236,8 @@ class Handler(BaseHTTPRequestHandler):
         return
 
 
-def serve(host: str = "127.0.0.1", port: int = 7070) -> None:
+def serve(port: int = 7070) -> None:
+    host = "127.0.0.1"
     srv = ThreadingHTTPServer((host, port), Handler)
     print(f"input-tracker web ui: http://{host}:{port}")
     try:

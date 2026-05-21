@@ -6,7 +6,7 @@ PartOf=graphical-session.target
 
 [Service]
 Type=simple
-ExecStart=%h/.input-tracker/venv/bin/python %h/.input-tracker/tracker.py web --host 127.0.0.1 --port 7070
+ExecStart=%h/.input-tracker/venv/bin/python %h/.input-tracker/tracker.py web --port 7070
 Restart=on-failure
 RestartSec=5
 
