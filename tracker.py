@@ -461,7 +461,7 @@ def cmd_export(args: argparse.Namespace) -> int:
 def cmd_web(args: argparse.Namespace) -> int:
     from webui import serve
 
-    serve(host=args.host, port=args.port)
+    serve(port=args.port)
     return 0
 
 
@@ -515,8 +515,7 @@ def main() -> None:
     export.add_argument("--day")
     export.add_argument("--out")
 
-    web = sub.add_parser("web", help="serve dashboard")
-    web.add_argument("--host", default="127.0.0.1")
+    web = sub.add_parser("web", help="serve dashboard (loopback only)")
     web.add_argument("--port", type=int, default=7070)
 
     sub.add_parser("run", help="run tracker daemon (default)")
